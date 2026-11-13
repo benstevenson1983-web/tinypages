@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Spreadsheets in a Weekend</title>
+<meta content="A short online course: go from spreadsheet basics to useful dashboards in two days." name="description"/>
+<style>
+        :root {
+            --bg: #fbfaf7; --surface: #ffffff; --text: #1d1f23; --muted: #5d6470;
+            --line: #e4e1da; --accent: #1f7a5a; --accent-ink: #ffffff; --soft: #e8f3ee;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #14161a; --surface: #1c1f24; --text: #ecedef; --muted: #a2a8b3;
+                --line: #2c3038; --accent: #4cc497; --accent-ink: #0e1a15; --soft: #1b2b25;
+            }
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--bg); color: var(--text);
+               font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+        .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+        header { padding: 18px 0; border-bottom: 1px solid var(--line); }
+        header .wrap { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 700; letter-spacing: -0.01em; }
+        nav a { color: var(--muted); text-decoration: none; margin-left: 18px; font-size: 15px; }
+        nav a:hover { color: var(--text); }
+        .hero { padding-top: 72px; padding-bottom: 56px; }
+        .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; margin: 0 0 16px; letter-spacing: -0.02em; }
+        .hero p { font-size: 1.15rem; color: var(--muted); max-width: 40em; margin: 0 0 28px; }
+        .btn { display: inline-block; background: var(--accent); color: var(--accent-ink); border: 0;
+               padding: 13px 22px; border-radius: 10px; font: inherit; font-weight: 600;
+               text-decoration: none; cursor: pointer; }
+        .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+        .btn:disabled { opacity: .5; cursor: default; }
+        section { padding: 48px 0; border-top: 1px solid var(--line); }
+        h2 { font-size: 1.6rem; margin: 0 0 20px; letter-spacing: -0.01em; }
+        .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+        .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+        .card h3 { margin: 0 0 6px; font-size: 1.05rem; }
+        .card p { margin: 0; color: var(--muted); font-size: 15px; }
+        .tag { display: inline-block; font-size: 12px; font-weight: 600; color: var(--accent);
+               background: var(--soft); border-radius: 99px; padding: 2px 10px; margin-bottom: 10px; }
+        .poll button { display: flex; width: 100%; justify-content: space-between; align-items: center;
+                       background: var(--surface); color: var(--text); border: 1px solid var(--line);
+                       border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; font: inherit; cursor: pointer;
+                       position: relative; overflow: hidden; text-align: left; }
+        .poll button .bar { position: absolute; inset: 0 auto 0 0; background: var(--soft); z-index: 0;
+                            transition: width .4s; }
+        .poll button span { position: relative; z-index: 1; }
+        .poll button.voted { border-color: var(--accent); }
+        .price { font-size: 2.4rem; font-weight: 700; margin: 4px 0 12px; }
+        .price small { font-size: 1rem; color: var(--muted); font-weight: 400; }
+        ul.ticks { padding: 0; list-style: none; margin: 0 0 20px; }
+        ul.ticks li { padding-left: 26px; position: relative; margin: 6px 0; }
+        ul.ticks li::before { content: "\2713"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+        details { border-bottom: 1px solid var(--line); padding: 14px 0; }
+        summary { cursor: pointer; font-weight: 600; }
+        details p { color: var(--muted); margin: 10px 0 0; }
+        textarea, input[type=text] { width: 100%; font: inherit; color: var(--text); background: var(--surface);
+                                     border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+        .row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .row input { flex: 1 1 160px; }
+        .qa { list-style: none; padding: 0; margin: 20px 0 0; }
+        .qa li { background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+                 padding: 12px 14px; margin-bottom: 8px; }
+        .qa .who { font-size: 13px; color: var(--muted); }
+        .note { font-size: 13px; color: var(--muted); margin-top: 10px; }
+        footer { padding: 32px 0 48px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+        @media (max-width: 560px) { nav { display: none; } .hero { padding-top: 48px; padding-bottom: 36px; } }
+    </style>
+<script>
+    // BEGIN TINYPAGES DATASTORE SECTION
+    //
+    // All the code in this block is autogenerated by tinypages and added to your static html page
+    // in order to support a simple datastore backed by a private GitHub repo.
+    //
+    // Please don't change anything here by hand
+    // If it's not working, try running tinypages again and getting a fresh link
+    
+    const datastoreId = "BBbvfJKEaSc0bVcPVzZ4";
+    const tinypagesDataRepo = "benstevenson1983-web/tinypages-data";
+    const tinypagesDataPath = "BBbvfJKEaSc0bVcPVzZ4.json";
+    const tinypagesExpiresAt = 1795153227617;
+    const tinypagesMaxSize = 2097152;
+    
+    // The write token travels in the share link (#tp=...), never in the page or the repo.
+    const tinypagesToken = (() => {
+        const key = "tinypages-token-" + datastoreId;
+        let token = null;
+        try {
+            const match = window.location.hash.match(/[#&]tp=([^&]+)/);
+            if (match) {
+                token = decodeURIComponent(match[1]);
+                sessionStorage.setItem(key, token);
+            } else {
+                token = sessionStorage.getItem(key);
+            }
+        } catch (e) {}
+        return token;
+    })();
+    
+    function tinypagesUrl() {
+        const path = tinypagesDataPath.split("/").map(encodeURIComponent).join("/");
+        return "https://api.github.com/repos/" + tinypagesDataRepo + "/contents/" + path;
+    }
+    
+    function tinypagesHeaders(accept) {
+        return {
+            "Authorization": "Bearer " + tinypagesToken,
+            "Accept": accept,
+            "X-GitHub-Api-Version": "2022-11-28",
+        };
+    }
+    
+    function tinypagesUsable() {
+        if (Date.now() > tinypagesExpiresAt) {
+            throw new Error("This tinypages link has expired. Run tinypages again to get a fresh link.");
+        }
+        return !!tinypagesToken;
+    }
+    
+    // Fetch state from the GitHub-backed datastore
+    async function fetchDatastore() {
+        try {
+            if (!tinypagesUsable()) {
+                console.warn("tinypages: no datastore token in this link, using this browser's storage only.");
+                const saved = localStorage.getItem("tinypages-" + datastoreId);
+                return saved ? JSON.parse(saved) : {};
+            }
+            const response = await fetch(tinypagesUrl(), {
+                method: "GET",
+                cache: "no-store",
+                headers: tinypagesHeaders("application/vnd.github.raw+json"),
+            });
+            if (!response.ok) {
+                throw new Error("Failed to fetch the file.");
+            }
+            return await response.json();
+        } catch (error) {
+            console.error("Error fetching tinypages state from GitHub:", error);
+        }
+    }
+    
+    // Write data to the GitHub-backed datastore
+    async function putDatastore(data) {
+        try {
+            const bytes = new TextEncoder().encode(JSON.stringify(data));
+            if (bytes.length > tinypagesMaxSize) {
+                throw new Error("Datastore is limited to " + tinypagesMaxSize + " bytes.");
+            }
+            if (!tinypagesUsable()) {
+                localStorage.setItem("tinypages-" + datastoreId, JSON.stringify(data));
+                console.warn("tinypages: no datastore token in this link, saved to this browser only.");
+                return;
+            }
+    
+            // Base64 of the UTF-8 bytes, in chunks so large data does not overflow the call stack
+            let binary = "";
+            for (let i = 0; i < bytes.length; i += 0x8000) {
+                binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+            }
+            const content = btoa(binary);
+    
+            // GitHub needs the current file sha; retry once if someone else wrote in between
+            for (let attempt = 0; attempt < 2; attempt++) {
+                const current = await fetch(tinypagesUrl(), {
+                    method: "GET",
+                    cache: "no-store",
+                    headers: tinypagesHeaders("application/vnd.github+json"),
+                });
+                const sha = current.ok ? (await current.json()).sha : undefined;
+    
+                const response = await fetch(tinypagesUrl(), {
+                    method: "PUT",
+                    headers: Object.assign(tinypagesHeaders("application/vnd.github+json"), {
+                        "Content-Type": "application/json",
+                    }),
+                    body: JSON.stringify({ message: "tinypages: update " + datastoreId, content: content, sha: sha }),
+                });
+                if (response.ok) {
+                    console.log("Datastore successfully updated.");
+                    return;
+                }
+                if (attempt === 1 || (response.status !== 409 && response.status !== 422)) {
+                    throw new Error("Failed to upload the file.");
+                }
+            }
+        } catch (error) {
+            console.error("Error putting tinypages state to GitHub:", error);
+        }
+    }
+    
+    
+    // END TINYPAGES DATASTORE SECTION
+</script>
+</head>
+<body>
+<header>
+<div class="wrap">
+<div class="logo">Spreadsheets in a Weekend</div>
+<nav>
+<a href="#curriculum">Curriculum</a>
+<a href="#vote">Vote</a>
+<a href="#pricing">Pricing</a>
+<a href="#questions">Questions</a>
+</nav>
+</div>
+</header>
+<main>
+<div class="wrap hero">
+<span class="tag">Example tinypages site</span>
+<h1>From blank sheet to a dashboard your boss will use, in two days.</h1>
+<p>Six short video lessons, practice files for each one, and a final project you can show at work.
+               No formulas memorised, just the twenty that matter.</p>
+<a class="btn" href="#pricing">Enrol now</a>
+<a class="btn ghost" href="#curriculum">See the lessons</a>
+<p class="note" id="likes-line"> </p>
+</div>
+<section id="curriculum">
+<div class="wrap">
+<h2>What you will learn</h2>
+<div class="grid">
+<div class="card"><span class="tag">Saturday AM</span><h3>1. Tidy data</h3>
+<p>Set up a sheet so every later step is easy.</p></div>
+<div class="card"><span class="tag">Saturday AM</span><h3>2. The 20 formulas</h3>
+<p>Lookups, conditions and text clean-up you will use every week.</p></div>
+<div class="card"><span class="tag">Saturday PM</span><h3>3. Pivot tables</h3>
+<p>Answer "how much, by what" questions in seconds.</p></div>
+<div class="card"><span class="tag">Sunday AM</span><h3>4. Charts that read fast</h3>
+<p>Pick the right chart and remove the clutter.</p></div>
+<div class="card"><span class="tag">Sunday PM</span><h3>5. A one-page dashboard</h3>
+<p>Combine it all into a page that updates itself.</p></div>
+<div class="card"><span class="tag">Sunday PM</span><h3>6. Final project</h3>
+<p>Build your own dashboard from your own data.</p></div>
+</div>
+</div>
+</section>
+<section id="vote">
+<div class="wrap">
+<h2>Help pick the bonus lesson</h2>
+<p class="note" style="margin-top:-10px">Votes are shared by everyone who has this link (tinypages datastore).</p>
+<div class="poll" id="poll"></div>
+</div>
+</section>
+<section id="pricing">
+<div class="wrap">
+<h2>Pricing</h2>
+<div class="grid">
+<div class="card">
+<h3>Self-paced</h3>
+<div class="price">$49 <small>one time</small></div>
+<ul class="ticks"><li>All 6 lessons</li><li>Practice files</li><li>Lifetime access</li></ul>
+<!-- Replace href with your payment link (Stripe Payment Link, Lemon Squeezy, Gumroad...) -->
+<a class="btn" href="#" onclick="alert('Example only: put your payment link here.'); return false;">Buy self-paced</a>
+</div>
+<div class="card">
+<h3>With feedback</h3>
+<div class="price">$129 <small>one time</small></div>
+<ul class="ticks"><li>Everything in self-paced</li><li>Written review of your final project</li><li>One 30 minute call</li></ul>
+<a class="btn" href="#" onclick="alert('Example only: put your payment link here.'); return false;">Buy with feedback</a>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="wrap">
+<h2>FAQ</h2>
+<details><summary>Which spreadsheet app do I need?</summary>
+<p>Any recent version of Excel or Google Sheets. Every lesson shows both.</p></details>
+<details><summary>How long do I have access?</summary>
+<p>For as long as the course exists. Download the files and keep them.</p></details>
+<details><summary>Is there a refund?</summary>
+<p>Yes, within 14 days if you have watched fewer than two lessons.</p></details>
+</div>
+</section>
+<section id="questions">
+<div class="wrap">
+<h2>Ask a question before you buy</h2>
+<textarea id="q-text" maxlength="400" placeholder="Your question" rows="3"></textarea>
+<div class="row">
+<input id="q-name" maxlength="40" placeholder="First name (optional)" type="text"/>
+<button class="btn" id="q-send">Post question</button>
+</div>
+<p class="note">Questions are visible to everyone with this link. Do not post email addresses or private details.</p>
+<ul class="qa" id="qa"></ul>
+</div>
+</section>
+</main>
+<footer>
+<div class="wrap">
+<button class="btn ghost" id="like">♥ I'm interested</button>
+<p>An example course page made to show what a tinypages site can do. Not a real course.</p>
+</div>
+</footer>
+<script>
+        const OPTIONS = ["Formulas with AI helpers", "Automating reports", "Budget templates", "Data from the web"];
+        const voteKey = "tp-voted";
+        const likeKey = "tp-liked";
+        let state = { votes: {}, likes: 0, questions: [] };
+
+        function el(tag, props = {}, text = "") {
+            const node = document.createElement(tag);
+            Object.assign(node, props);
+            if (text) node.textContent = text;
+            return node;
+        }
+
+        function render() {
+            const poll = document.getElementById("poll");
+            poll.innerHTML = "";
+            const total = OPTIONS.reduce((n, o) => n + (state.votes[o] || 0), 0);
+            const mine = localStorage.getItem(voteKey);
+            OPTIONS.forEach(o => {
+                const n = state.votes[o] || 0;
+                const pct = total ? Math.round(100 * n / total) : 0;
+                const b = el("button", { className: mine === o ? "voted" : "" });
+                const bar = el("span", { className: "bar" });
+                bar.style.width = (mine ? pct : 0) + "%";
+                b.append(bar, el("span", {}, o), el("span", {}, mine ? pct + "% (" + n + ")" : ""));
+                b.onclick = () => vote(o);
+                poll.append(b);
+            });
+
+            const likes = state.likes || 0;
+            document.getElementById("likes-line").textContent =
+                likes ? likes + (likes === 1 ? " person is" : " people are") + " interested so far." : " ";
+            const likeBtn = document.getElementById("like");
+            likeBtn.disabled = !!localStorage.getItem(likeKey);
+
+            const qa = document.getElementById("qa");
+            qa.innerHTML = "";
+            (state.questions || []).slice().reverse().forEach(q => {
+                const li = el("li");
+                li.append(el("div", {}, q.text), el("div", { className: "who" },
+                    (q.name || "Someone") + " · " + new Date(q.at).toLocaleDateString()));
+                qa.append(li);
+            });
+        }
+
+        // Read the newest shared state, change it, then save it back
+        async function update(change) {
+            const latest = (await fetchDatastore()) || {};
+            state = Object.assign({ votes: {}, likes: 0, questions: [] }, latest);
+            change(state);
+            await putDatastore(state);
+            render();
+        }
+
+        function vote(option) {
+            const prev = localStorage.getItem(voteKey);
+            if (prev === option) return;
+            localStorage.setItem(voteKey, option);
+            update(s => {
+                if (prev && s.votes[prev]) s.votes[prev] -= 1;
+                s.votes[option] = (s.votes[option] || 0) + 1;
+            });
+        }
+
+        document.getElementById("like").onclick = () => {
+            localStorage.setItem(likeKey, "1");
+            update(s => { s.likes = (s.likes || 0) + 1; });
+        };
+
+        document.getElementById("q-send").onclick = () => {
+            const text = document.getElementById("q-text").value.trim();
+            const name = document.getElementById("q-name").value.trim();
+            if (!text) return;
+            document.getElementById("q-text").value = "";
+            update(s => {
+                s.questions = (s.questions || []).concat({ text: text.slice(0, 400), name: name.slice(0, 40), at: Date.now() });
+                s.questions = s.questions.slice(-50);
+            });
+        };
+
+        fetchDatastore().then(data => {
+            state = Object.assign(state, data || {});
+            render();
+        });
+    </script>
+</body>
+</html>
